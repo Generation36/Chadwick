@@ -1,0 +1,2 @@
+# Chadwick
+Simple discord bot
