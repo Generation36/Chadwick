@@ -1,3 +1,4 @@
+from pickletools import dis
 import discord, os, random, youtube_dl, asyncio
 from discord.ext import commands
 
@@ -134,20 +135,38 @@ async def users(ctx):
     
 # Greet New Member upon joining
 @bot.event
-async def on_member_join(member):
-    print("Recognised that a member called " + member.name + " joined")
+async def on_member_join(ctx):
+    print("Recognised that a member called " + ctx.name + " joined")
     try: 
-        guild = member.guild
+        guild = ctx.guild
         if guild.system_channel is not None:
-            to_send = f'Welcome {member.mention} to the Shit Show'
+            to_send = f'Welcome {ctx.mention} to the Shit Show'
             await guild.system_channel.send(to_send)
     except:
-        print("Couldn't message " + member.name)
+        print("Couldn't message " + ctx.name)
 
 # Assign a role to a user
-# @bot.command(name="new_role", brief="Give a user a new role"):
-#     async def new_role(member, role):
-#         if 
+@bot.command(name="new_role", brief="Give a user a new role")
+@commands.has_role("The Inner Circle") # Only highest ranked members should be able to assign roles
+async def new_role(ctx, member: discord.Member, *, role: discord.Role):
+    if role in member.roles:
+        await member.remove_roles(role)
+        await ctx.send("{member.mention} has been named apart of, {role}".format())
+    else:
+        await member.add_roles(role) #adds role if not already has it
+        await ctx.send(f"Added {role} to {member.mention}")
+
+# Take away a role from an unworthy member
+# @bot.command(name="remove_role", brief="Remove a role from an existing member", pass_context=True)
+# @commands.has_role("The Inner Circle") #Only highest ranked members should be able to assign roles
+# async def remove_role(ctx, member: discord.Member, role):
+#     try:
+#         if member.has_role("The Inner Circle")
+#         await member.add_roles(role)
+#         await ctx.send("{member.name} has been named apart of, {role}".format())
+
+# Move a member to designated channel
+
 # Startup Function
 @bot.event
 async def on_ready():
