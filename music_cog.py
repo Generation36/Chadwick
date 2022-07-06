@@ -1,7 +1,3 @@
-from ast import alias
-from ssl import ALERT_DESCRIPTION_BAD_CERTIFICATE_STATUS_RESPONSE
-from sysconfig import is_python_build
-from tkinter.messagebox import NO
 import discord
 from discord.ext import commands
 
@@ -15,21 +11,8 @@ class music_cog(commands.Cog):
         self.is_paused = False
 
         self.music_queue = []
-        self.YDL_OPTIONS = {
-            'format': 'bestaudio/best',
-            'restrictfilenames': True,
-            'noplaylist': True,
-            'nocheckcertificate': True,
-            'ignoreerrors': False,
-            'logtostderr': False,
-            'quiet': True,
-            'default_search': 'auto',
-            'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
-        }
-        self.FFMPEG_OPTIONS = {
-            'before_options' : '-reconnect 1 -reconnected_streamed 1 -reconnect_delay_max 5',
-            'options' : '-vn' 
-        }
+        self.YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
+        self.FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
         self.vc = None
 
     def search_yt(self, item):
@@ -38,7 +21,7 @@ class music_cog(commands.Cog):
                 info = ydl.extract_info("ytsearch:%s" % item, download=False)['entries'][0]
             except Exception:
                 return False
-            return {'source':info['formats'[0]['url']], 'title': info['title']}
+        return {'source': info['formats'][0]['url'], 'title': info['title']}
 
     def play_next(self):
         if len(self.music_queue) > 0:
@@ -48,8 +31,8 @@ class music_cog(commands.Cog):
 
             self.music_queue.pop(0)
 
-            self.vc.play(discord.FFmpegAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
-        else:
+            self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
+        else:    
             self.is_playing = False
 
     async def play_music(self, ctx):
@@ -57,19 +40,22 @@ class music_cog(commands.Cog):
             self.is_playing = True
 
             m_url = self.music_queue[0][0]['source']
-
+            
+            #try to connect to voice channel if you are not already connected
             if self.vc == None or not self.vc.is_connected():
                 self.vc = await self.music_queue[0][1].connect()
 
+                #in case we fail to connect
                 if self.vc == None:
                     await ctx.send("Could not connect to the voice channel")
                     return
             else:
                 await self.vc.move_to(self.music_queue[0][1])
             
+            #remove the first element as you are currently playing it
             self.music_queue.pop(0)
 
-            self.vc.play(discord.FFmpegAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
+            self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
         else:
             self.is_playing = False
 
