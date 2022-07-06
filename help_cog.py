@@ -25,15 +25,18 @@ General commands:
             for channel in guild.text_channels:
                 if channel.name == 'bot':
                     await channel.send("Chadwick is live and waiting for commands...")
-            
-        # await ctx.send("Chadwick is live and on standby")
-        # await self.send_to_all(self.help_message)
     
-    
+    @commands.Cog.listener()
+    async def on_member_join(self, ctx):
+        print("Recognised that a member called " + ctx.name + " joined")
+        try: 
+            guild = ctx.guild
+            if guild.system_channel is not None:
+                to_send = f'Welcome {ctx.mention} to the Shit Show'
+                await guild.system_channel.send(to_send)
+        except:
+            print("Couldn't message " + ctx.name) 
+
     @commands.command(name="help", help="Displays all the available commands")
     async def help(self, ctx):
         await ctx.send(self.help_message)
-
-    async def send_to_all(self, msg):
-        for text_channel in self.text_channel_text:
-            await text_channel.send(msg)
