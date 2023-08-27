@@ -20,6 +20,20 @@ bot.remove_command("help")
 #     except:
 #         print("Couldn't message " + ctx.name)
 
+# Join Channel
+@bot.command(name='join', brief='Tells bot to join the channel')
+async def join(ctx):
+    if not ctx.message.author.voice:
+        await ctx.send("{} is not connected to a voice channel".format(ctx.message.author.name))
+        return 
+    else:
+        channel = ctx.message.author.voice.channel
+    await channel.connect()
+
+@bot.event
+async def on_ready():
+    print("Chadwick bot is going live..")
+
 bot.add_cog(help_cog(bot))
 bot.add_cog(music_cog(bot))
 
