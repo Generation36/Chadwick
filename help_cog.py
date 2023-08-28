@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import logging
 
 class help_cog(commands.Cog):
     def __init__(self, bot):
@@ -8,8 +9,8 @@ class help_cog(commands.Cog):
 ```
 General commands:
 /help - displays all the available commands
-/p <keywords> - finds the song on youtube and plays it in your current channel. Will resume playing the current song if it was paused
-/q - displays the current music queue
+/p, /play <keywords> - finds the song on youtube and plays it in your current channel. Will resume playing the current song if it was paused
+/q, /queue - displays the current music queue
 /skip - skips the current song being played
 /clear - Stops the music and clears the queue
 /leave - Disconnected the bot from the voice channel
@@ -19,8 +20,10 @@ General commands:
 """
         self.text_channel_text = []
     
+    # start up command
     @commands.Cog.listener()
     async def on_ready(self):
+        logging.debug("Chadwick is live and waiting for commands...")
         for guild in self.bot.guilds:
             for channel in guild.text_channels:
                 if channel.name == 'bot':
@@ -28,7 +31,7 @@ General commands:
     
     @commands.Cog.listener()
     async def on_member_join(self, ctx):
-        print("Recognised that a member called " + ctx.name + " joined")
+        logging.debug(f"Recognised that a member called {ctx.name} joined")
         try: 
             guild = ctx.guild
             if guild.system_channel is not None:

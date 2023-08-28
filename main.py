@@ -9,6 +9,7 @@ from music_cog import music_cog
 bot = commands.Bot(command_prefix='/')
 bot.remove_command("help")
 
+# ctx == Discord Context Object
 # @bot.event
 # async def on_member_join(ctx):
 #     print("Recognised that a member called " + ctx.name + " joined")
@@ -27,12 +28,9 @@ async def join(ctx):
         await ctx.send("{} is not connected to a voice channel".format(ctx.message.author.name))
         return 
     else:
-        channel = ctx.message.author.voice.channel
+        channel = ctx.author.voice.channel
     await channel.connect()
 
-@bot.event
-async def on_ready():
-    print("Chadwick bot is going live..")
 
 bot.add_cog(help_cog(bot))
 bot.add_cog(music_cog(bot))

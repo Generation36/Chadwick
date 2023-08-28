@@ -31,6 +31,7 @@ class music_cog(commands.Cog):
 
             self.music_queue.pop(0)
 
+            # TODO: Start here for the new pytube fix
             self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
         else:    
             self.is_playing = False
@@ -119,8 +120,8 @@ class music_cog(commands.Cog):
         self.music_queue = []
         await ctx.send("Music queue cleared")
     
-    @commands.command(name="leave", aliases=["disconnect", "l"], help="Kick the bot from the voice channel")
-    async def leave(self, ctx):
-        self.is_playing = False
-        self.is_paused = True
-        await self.vc.disconnect()
+    # @commands.command(name="leave", aliases=["disconnect", "l"], help="Kick the bot from the voice channel")
+    # async def leave(self, ctx):
+    #     self.is_playing = False
+    #     self.is_paused = True
+    #     await self.vc.disconnect()
